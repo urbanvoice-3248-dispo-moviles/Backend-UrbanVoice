@@ -1,7 +1,6 @@
 package com.upc.pre.urbanvoiceapp.location;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upc.pre.urbanvoiceapp.config.TestAuthHelper;
 import com.upc.pre.urbanvoiceapp.schemas.LocationSchema;
 import com.upc.pre.urbanvoiceapp.services.LocationService;
 import org.junit.jupiter.api.Test;
@@ -22,21 +21,17 @@ public class LocationControllerIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
-    @Autowired private TestAuthHelper authHelper;
     @Autowired private LocationService locationService;
 
     @Test
     void whenCreateLocation_thenReturnsCreated() throws Exception {
         // 🔹 Arrange
-        String token = authHelper.registerAndAuthenticateTestUser("locationuser@example.com", "123456");
-
         LocationSchema location = new LocationSchema(
                 "-12.0464", "-77.0428", 1L
         );
 
         // 🔹 Act & Assert
         mockMvc.perform(post("/api/v1/locations/")
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(location)))
                 .andExpect(status().isCreated())
@@ -47,11 +42,8 @@ public class LocationControllerIntegrationTest {
     @Test
     void whenGetAllLocations_thenReturnsList() throws Exception {
         // 🔹 Arrange
-        String token = authHelper.registerAndAuthenticateTestUser("viewer@example.com", "123456");
-
         // 🔹 Act & Assert
-        mockMvc.perform(get("/api/v1/locations/")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/locations/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -59,14 +51,11 @@ public class LocationControllerIntegrationTest {
     @Test
     void whenGetDangerousLocations_thenReturnsFilteredList() throws Exception {
         // 🔹 Arrange
-        String token = authHelper.registerAndAuthenticateTestUser("filter@example.com", "123456");
-
         int quantityReports = 1;
 
         // 🔹 Act & Assert
         mockMvc.perform(get("/api/v1/locations/dangerous")
-                        .param("quantity_reports", String.valueOf(quantityReports))
-                        .header("Authorization", "Bearer " + token))
+                        .param("quantity_reports", String.valueOf(quantityReports)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }

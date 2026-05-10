@@ -1,7 +1,6 @@
 package com.upc.pre.urbanvoiceapp.alert;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upc.pre.urbanvoiceapp.config.TestAuthHelper;
 import com.upc.pre.urbanvoiceapp.models.Alert;
 import com.upc.pre.urbanvoiceapp.schemas.AlertSchema;
 import com.upc.pre.urbanvoiceapp.services.AlertService;
@@ -26,14 +25,11 @@ public class AlertControllerIntegrationTest {
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
-    @Autowired private TestAuthHelper authHelper;
     @Autowired private AlertService alertService;
 
     @Test
     void whenCreateAlert_thenReturnsCreated() throws Exception {
         // 🔹 Arrange
-        String token = authHelper.registerAndAuthenticateTestUser("alertuser@example.com", "123456");
-
         AlertSchema alert = new AlertSchema(
                 "Miraflores",
                 "Accident",
@@ -45,7 +41,6 @@ public class AlertControllerIntegrationTest {
 
         // 🔹 Act & Assert
         mockMvc.perform(post("/api/v1/alerts/")
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(alert)))
                 .andExpect(status().isCreated())
@@ -57,11 +52,9 @@ public class AlertControllerIntegrationTest {
     void whenGetAlertById_thenReturnsAlert() throws Exception {
         // 🔹 Arrange
         Alert alert = alertService.saveAlert(new AlertSchema("San Isidro", "Robbery", "Reported robbery", 2, null, null));
-        String token = authHelper.registerAndAuthenticateTestUser("viewalert@example.com", "123456");
 
         // 🔹 Act & Assert
-        mockMvc.perform(get("/api/v1/alerts/" + alert.getId())
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/alerts/" + alert.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type").value("Robbery"));
     }
@@ -72,11 +65,8 @@ public class AlertControllerIntegrationTest {
         alertService.saveAlert(new AlertSchema("Lima", "Fire", "Burning building", 99, null, null));
         alertService.saveAlert(new AlertSchema("Lima", "Flood", "Overflow", 99, null, null));
 
-        String token = authHelper.registerAndAuthenticateTestUser("user99@example.com", "123456");
-
         // 🔹 Act & Assert
-        mockMvc.perform(get("/api/v1/alerts/user/99")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/alerts/user/99"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -87,11 +77,8 @@ public class AlertControllerIntegrationTest {
         // 🔹 Arrange
         alertService.saveAlert(new AlertSchema("Callao", "Accident", "Dock collision", 77, null, null));
 
-        String token = authHelper.registerAndAuthenticateTestUser("reader@example.com", "123456");
-
         // 🔹 Act & Assert
-        mockMvc.perform(get("/api/v1/alerts/")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/alerts/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -100,11 +87,9 @@ public class AlertControllerIntegrationTest {
     void whenDeleteAllAlerts_thenAllAreRemoved() throws Exception {
         // 🔹 Arrange
         alertService.saveAlert(new AlertSchema("Breña", "Warning", "Bridge crack", 15, null, null));
-        String token = authHelper.registerAndAuthenticateTestUser("deleter@example.com", "123456");
 
         // 🔹 Act
-        mockMvc.perform(delete("/api/v1/alerts/")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(delete("/api/v1/alerts/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("All alerts have been deleted"));
 

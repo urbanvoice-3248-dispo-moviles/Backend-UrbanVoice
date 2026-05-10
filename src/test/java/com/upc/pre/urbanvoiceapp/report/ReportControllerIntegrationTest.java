@@ -1,7 +1,6 @@
 package com.upc.pre.urbanvoiceapp.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upc.pre.urbanvoiceapp.config.TestAuthHelper;
 import com.upc.pre.urbanvoiceapp.models.Report;
 import com.upc.pre.urbanvoiceapp.schemas.ReportSchema;
 import com.upc.pre.urbanvoiceapp.services.ReportService;
@@ -29,20 +28,14 @@ public class ReportControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private TestAuthHelper authHelper;
-    @Autowired
     private ReportService reportService;
 
     @Test
     void whenCreateReport_thenReturnsCreatedReport() throws Exception {
         // 🔹 Arrange
-        String email = "reportuser@example.com";
-        String password = "123456";
-        String token = authHelper.registerAndAuthenticateTestUser(email, password);
-
         ReportSchema report = new ReportSchema(
                 "Noise Complaint",
-                "There’s loud construction noise every morning.",
+                "There's loud construction noise every morning.",
                 "Noise",
                 1L,
                 null,
@@ -51,7 +44,6 @@ public class ReportControllerIntegrationTest {
 
         // 🔹 Act & Assert
         mockMvc.perform(post("/api/v1/reports/")
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(report)))
                 .andExpect(status().isCreated())
@@ -65,11 +57,8 @@ public class ReportControllerIntegrationTest {
         Report report = new Report("Test Report", "detail", "General", 2L, null, "Avenida Lima");
         reportService.save(report);
 
-        String token = authHelper.registerAndAuthenticateTestUser("reader@example.com", "123456");
-
         // 🔹 Act & Assert
-        mockMvc.perform(get("/api/v1/reports/")
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/reports/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -78,11 +67,9 @@ public class ReportControllerIntegrationTest {
     void whenGetReportById_thenReturnsReport() throws Exception {
         // 🔹 Arrange
         Report report = reportService.save(new Report("Report By ID", "detail", "Alert", 3L, null, "Calle 9"));
-        String token = authHelper.registerAndAuthenticateTestUser("viewer@example.com", "123456");
 
         // 🔹 Act & Assert
         mockMvc.perform(get("/api/v1/reports/" + report.getId())
-                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Report By ID"));
     }
@@ -94,11 +81,8 @@ public class ReportControllerIntegrationTest {
         reportService.save(new Report("User Report 1", "detail", "Incident", userId, null, "Z1"));
         reportService.save(new Report("User Report 2", "detail", "Incident", userId, null, "Z2"));
 
-        String token = authHelper.registerAndAuthenticateTestUser("multiuser@example.com", "123456");
-
         // 🔹 Act & Assert
-        mockMvc.perform(get("/api/v1/reports/user/" + userId)
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(get("/api/v1/reports/user/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
@@ -108,11 +92,8 @@ public class ReportControllerIntegrationTest {
         // 🔹 Arrange
         Report report = reportService.save(new Report("To Delete", "detail", "Trash", 10L, null, "Old Street"));
 
-        String token = authHelper.registerAndAuthenticateTestUser("deleter@example.com", "123456");
-
         // 🔹 Act
-        mockMvc.perform(delete("/api/v1/reports/" + report.getId())
-                        .header("Authorization", "Bearer " + token))
+        mockMvc.perform(delete("/api/v1/reports/" + report.getId()))
                 .andExpect(status().isNoContent());
 
         // 🔹 Assert

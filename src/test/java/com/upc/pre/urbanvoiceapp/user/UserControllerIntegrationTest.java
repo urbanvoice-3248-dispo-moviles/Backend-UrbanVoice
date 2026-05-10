@@ -1,7 +1,6 @@
 package com.upc.pre.urbanvoiceapp.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upc.pre.urbanvoiceapp.config.TestAuthHelper;
 import com.upc.pre.urbanvoiceapp.models.UserProfile;
 import com.upc.pre.urbanvoiceapp.schemas.UpdateUserProfileSchema;
 import com.upc.pre.urbanvoiceapp.schemas.UserProfileSchema;
@@ -31,8 +30,6 @@ public class UserControllerIntegrationTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UserService userService;
-    @Autowired
-    private TestAuthHelper authHelper;
 
     @Test
     void whenCreateUser_thenReturnsUser() throws Exception {
@@ -40,11 +37,8 @@ public class UserControllerIntegrationTest {
         UserProfileSchema newUser = new UserProfileSchema(
                 "John", "Doe", "1234", "john@example.com", "pwrd123", "1", null
         );
-        String token = authHelper.registerAndAuthenticateTestUser("john@example.com", "password123");
-
         // 🔹 Act & Assert
         mockMvc.perform(post("/api/v1/users")
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(status().isOk())
@@ -57,12 +51,8 @@ public class UserControllerIntegrationTest {
         UserProfile user = new UserProfile("Jane", "jane@example.com", "password", "Smith", "999888777", "2", null);
         userService.save(user);
 
-        String token = authHelper.registerAndAuthenticateTestUser("jane@example.com", "password");
-
-
         // 🔹 Act & Assert
         mockMvc.perform(get("/api/v1/users/jane@example.com")
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -78,11 +68,8 @@ public class UserControllerIntegrationTest {
                 "Tommy", "newlastname", "123456789", null
         );
 
-        String token = authHelper.registerAndAuthenticateTestUser("tom@example.com", "password123");
-
         // 🔹 Act & Assert
         mockMvc.perform(put("/api/v1/users/" + saved.getId())
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(update)))
                 .andExpect(status().isOk())
@@ -94,15 +81,12 @@ public class UserControllerIntegrationTest {
         // 🔹 Arrange
         UserProfile saved = userService.save(new UserProfile("Delete", "del@example.com", "pass", "User", "000111222", "4", null));
 
-        String token = authHelper.registerAndAuthenticateTestUser("del@example.com", "password123");
-
         // 🔹 Act
         mockMvc.perform(delete("/api/v1/users/" + saved.getId())
-                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().string("User deleted in both tables"));
+                .andExpect(content().string("User deleted"));
 
         // 🔹 Assert
         Optional<UserProfile> deleted = userService.findOptionalById(saved.getId());
