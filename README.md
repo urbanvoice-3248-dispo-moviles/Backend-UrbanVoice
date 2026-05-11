@@ -1,54 +1,49 @@
-# PeaceApp Backend
+# UrbanVoice Backend
 
-This repository contains the backend implementation for the PeaceApp application. The backend is built using 
-Java and Spring Boot, providing RESTful services for managing alerts, user profiles, reports, and location data.
+Backend para la aplicación UrbanVoice - Reporte ciudadano de incidentes. Construido con Java 23 y Spring Boot 3.3.3.
 
-## Features
-- **User Management**: Create and manage user profiles securely.
-- **Alert System**: Allow users to create and respond to alerts.
-- **Location Tracking**: Record and manage user locations.
-- **Incident Reporting**: Manage and view reported incidents.
+## Arquitectura
 
-## Project Structure
-The project follows a standard Maven-based Spring Boot structure with a clear separation of concerns:
+El proyecto sigue una arquitectura hexagonal (DDD) con los siguientes bounded contexts:
+- **Profiles**: Gestión de perfiles de usuario
+- **Reports**: Reporte de incidentes ciudadanos
+- **Locations**: Ubicaciones y zonas de riesgo
+- **Notifications**: Sistema de notificaciones y alertas
 
-- **Application Entry Point**:
-  - `PeaceappApplication.java`: Main class that bootstraps the Spring Boot application.
+## Endpoints API
 
-- **Controllers** (`src/main/java/com/upc/pre/peaceapp/controllers`):
-  - `AlertController.java`: Handles HTTP requests related to alerts.
-  - `LocationController.java`: Manages location-related requests.
-  - `ReportController.java`: Handles all operations related to reports.
-  - `UserController.java`: Manages user-related requests.
+### Profiles (`/api/v1/profiles`)
+- `POST /` - Crear perfil de usuario
+- `GET /{id}` - Obtener perfil por ID
+- `GET /email/{email}` - Obtener perfil por email
+- `PUT /{id}` - Actualizar perfil
+- `DELETE /{id}` - Eliminar perfil
 
-- **Models** (`src/main/java/com/upc/pre/peaceapp/models`):
-  - Classes representing the entities of the application, such as `UserProfile`, `Alert`, `Location`, and `Report`.
+### Reports (`/api/v1/reports`)
+- `POST /` - Crear reporte de incidente
+- `GET /{id}` - Obtener reporte por ID
+- `GET /user/{userId}` - Obtener reportes por usuario
+- `GET /nearby` - Obtener reportes cercanos
+- `PUT /{id}` - Actualizar reporte
+- `DELETE /{id}` - Eliminar reporte
+- `POST /{id}/upvote` - Votar positivo
+- `POST /{id}/downvote` - Votar negativo
 
-- **Repositories** (`src/main/java/com/upc/pre/peaceapp/repositories`):
-  - Interfaces extending `JpaRepository` for CRUD operations on the entities.
+### Locations (`/api/v1/locations`)
+- `POST /` - Crear ubicación
+- `GET /` - Listar ubicaciones
+- `GET /{id}` - Obtener ubicación por ID
+- `GET /nearby` - Ubicaciones cercanas
+- `GET /district/{district}` - Ubicaciones por distrito
+- `GET /dangerous` - Ubicaciones peligrosas
+- `DELETE /{id}` - Eliminar ubicación
 
-- **Resources** (`src/main/resources`):
-  - `application.properties`: Defines configuration settings such as database connection, server ports, etc.
+## Requisitos
+- JDK 23
+- Maven 3.6+
+- PostgreSQL
 
-## Getting Started
-
-### Prerequisites
-- **JDK 11 or 17** (preferably)
-- **Maven 3.6+**
-- **IntelliJ IDEA** or any Java IDE
-
-### Installation
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/username/PeaceAppBackend.git
-   cd PeaceAppBackend
-   ```
-2. **Import the Project in IntelliJ**:
-   - Open IntelliJ IDEA, click on **Open** and select the project's `pom.xml` file to load it as a Maven project.
-3. **Build and Run**:
-   - Let IntelliJ sync Maven dependencies.
-   - Run the `PeaceappApplication` class to start the backend server.
-
-### Usage
-- The backend provides RESTful endpoints that can be accessed using tools like Postman or via the frontend application.
-- The base URL for the API is `http://localhost:8080`.
+## Ejecutar
+```bash
+mvn spring-boot:run
+```

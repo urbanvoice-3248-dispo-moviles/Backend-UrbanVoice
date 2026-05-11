@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/> 
     </parent>
     <groupId>com.upc.pre</groupId>
-    <artifactId>peaceapp</artifactId>
+    <artifactId>urbanvoiceapp</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>peaceapp</name>
-    <description>Demo project for Spring Boot</description>
+    <name>urbanvoiceapp</name>
+    <description>Urban Voice - Reporte ciudadano de incidentes</description>
 
     <properties>
         <java.version>23</java.version>
@@ -38,14 +38,12 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- 1. CAMBIO: PostgreSQL en lugar de MySQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- 2. CAMBIO: Forzar versión de Lombok compatible con Java 17 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -57,31 +55,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.12.3</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.12.3</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
         </dependency>
 
         <dependency>
@@ -98,7 +71,6 @@
 
     <build>
         <plugins>
-            <!-- 3. CAMBIO: Agregar configuración explícita del compilador para Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
