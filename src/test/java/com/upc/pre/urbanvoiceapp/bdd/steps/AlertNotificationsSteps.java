@@ -1,12 +1,9 @@
 package com.upc.pre.urbanvoiceapp.bdd.steps;
 
-import com.upc.pre.urbanvoiceapp.notifications.domain.entities.Alert;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,29 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
  * Definiciones de Pasos para el feature de Sistema de Alertas y Notificaciones
  * Implementa los pasos en Gherkin para pruebas de notificaciones y alertas
  */
-@ContextConfiguration
 public class AlertNotificationsSteps {
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     private Map<String, Object> alertData = new HashMap<>();
     private Map<String, Object> userData = new HashMap<>();
-    private String baseUrl = "http://localhost:8080/api/v1/alerts";
     private Long userId;
     private Long alertId;
     private boolean alertReceived;
     private String alertType;
-
-    @Given("el sistema está en ejecución")
-    public void sistemaPareceEnEjecucion() {
-        assertNotNull(restTemplate, "RestTemplate debe estar disponible");
-    }
-
-    @Given("la base de datos está limpia")
-    public void baseDatosLimpia() {
-        System.out.println("Base de datos limpia para la prueba");
-    }
 
     @Given("existe un perfil de usuario con ID {int} en la ubicación {double}, {double}")
     public void perfilUsuarioEnUbicacion(int id, double latitude, double longitude) {
