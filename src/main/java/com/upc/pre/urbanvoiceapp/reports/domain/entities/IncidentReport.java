@@ -50,15 +50,34 @@ public class IncidentReport {
         this(null, userId, incidentType, location, title, description, mediaUrl, isAnonymous);
     }
 
+    public void setTitle(String title) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("Title cannot be null or blank");
+        }
+        this.title = title;
+    }
+
+    public void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
+
+    public void setUpvotes(int upvotes) {
+        this.upvotes = upvotes;
+    }
+
+    public void setReportedAt(LocalDateTime reportedAt) {
+        this.reportedAt = reportedAt;
+    }
+
     /**
-     * Incrementa el contador de upvotes.
+     * Incrementa el contador de votos positivos.
      */
     public void addUpvote() {
         this.upvotes++;
     }
 
     /**
-     * Decrementa el contador de upvotes.
+     * Decrementa el contador de votos positivos.
      */
     public void removeUpvote() {
         if (this.upvotes > 0) {

@@ -51,7 +51,7 @@ public class IncidentReportJpaEntity {
     @Column(name = "is_anonymous", nullable = false)
     private Boolean isAnonymous = false;
 
-    @Column(name = "upvotes", nullable = false)
+    @Column(name = "votos_positivos", nullable = false)
     private Integer upvotes = 0;
 
     @CreationTimestamp

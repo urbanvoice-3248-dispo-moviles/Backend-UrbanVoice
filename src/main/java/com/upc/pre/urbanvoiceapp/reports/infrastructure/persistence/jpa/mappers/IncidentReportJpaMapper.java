@@ -39,9 +39,8 @@ public class IncidentReportJpaMapper {
                 jpaEntity.getIsAnonymous()
         );
 
-        // Set adicionales que se actualizan después de la creación
-        //report.(jpaEntity.getUpvotes());
-        //report.setReportedAt(jpaEntity.getReportedAt());
+        report.setUpvotes(jpaEntity.getUpvotes());
+        report.setReportedAt(jpaEntity.getReportedAt());
 
         return report;
     }
