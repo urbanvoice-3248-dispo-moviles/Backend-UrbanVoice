@@ -24,7 +24,6 @@ public class IncidentReport {
     private String description;
     private String mediaUrl;
     private boolean isAnonymous;
-    private int upvotes;
     private LocalDateTime reportedAt;
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
@@ -38,7 +37,6 @@ public class IncidentReport {
         this.description = description;
         this.mediaUrl = mediaUrl;
         this.isAnonymous = isAnonymous;
-        this.upvotes = 0;
         this.reportedAt = LocalDateTime.now();
     }
 
@@ -61,28 +59,8 @@ public class IncidentReport {
         this.mediaUrl = mediaUrl;
     }
 
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
-    }
-
     public void setReportedAt(LocalDateTime reportedAt) {
         this.reportedAt = reportedAt;
-    }
-
-    /**
-     * Incrementa el contador de votos positivos.
-     */
-    public void addUpvote() {
-        this.upvotes++;
-    }
-
-    /**
-     * Decrementa el contador de votos positivos.
-     */
-    public void removeUpvote() {
-        if (this.upvotes > 0) {
-            this.upvotes--;
-        }
     }
 
     /**

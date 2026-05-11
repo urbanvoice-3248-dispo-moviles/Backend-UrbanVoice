@@ -49,7 +49,6 @@ public class IncidentReportAssembler {
         response.setAddress(report.getLocation().getAddress());
         response.setMediaUrl(report.getMediaUrl());
         response.setIsAnonymous(report.isAnonymous());
-        response.setUpvotes(report.getUpvotes());
         response.setReportedAt(report.getReportedAt());
         return response;
     }

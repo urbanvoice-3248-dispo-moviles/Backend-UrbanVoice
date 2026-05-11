@@ -123,24 +123,4 @@ public class IncidentReportApplicationService {
     public List<IncidentReport> handle(FindNearbyIncidentsQuery query) {
         return reportRepository.findNearby(query.getLatitude(), query.getLongitude(), query.getRadiusInKm());
     }
-
-    /**
-     * Incrementa el contador de votos positivos para un reporte.
-     */
-    public void votarPositivo(Long reportId) {
-        IncidentReport report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado"));
-        report.addUpvote();
-        reportRepository.save(report);
-    }
-
-    /**
-     * Decrementa el contador de votos positivos para un reporte.
-     */
-    public void votarNegativo(Long reportId) {
-        IncidentReport report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado"));
-        report.removeUpvote();
-        reportRepository.save(report);
-    }
 }

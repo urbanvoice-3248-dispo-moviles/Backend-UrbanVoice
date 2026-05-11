@@ -51,9 +51,6 @@ public class IncidentReportJpaEntity {
     @Column(name = "is_anonymous", nullable = false)
     private Boolean isAnonymous = false;
 
-    @Column(name = "votos_positivos", nullable = false)
-    private Integer upvotes = 0;
-
     @CreationTimestamp
     @Column(name = "reported_at", nullable = false, updatable = false)
     private LocalDateTime reportedAt;

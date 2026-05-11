@@ -125,25 +125,4 @@ public class IncidentReportController {
         }
     }
 
-    @PostMapping("/{id}/votar-positivo")
-    @Operation(summary = "Votar positivamente un reporte")
-    public ResponseEntity<?> votarPositivo(@PathVariable Long id) {
-        try {
-            reportService.votarPositivo(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @PostMapping("/{id}/votar-negativo")
-    @Operation(summary = "Votar negativamente un reporte")
-    public ResponseEntity<?> votarNegativo(@PathVariable Long id) {
-        try {
-            reportService.votarNegativo(id);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 }

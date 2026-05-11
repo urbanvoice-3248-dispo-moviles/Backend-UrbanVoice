@@ -39,7 +39,6 @@ public class IncidentReportJpaMapper {
                 jpaEntity.getIsAnonymous()
         );
 
-        report.setUpvotes(jpaEntity.getUpvotes());
         report.setReportedAt(jpaEntity.getReportedAt());
 
         return report;
@@ -61,7 +60,6 @@ public class IncidentReportJpaMapper {
         jpaEntity.setAddress(domain.getLocation().getAddress());
         jpaEntity.setMediaUrl(domain.getMediaUrl());
         jpaEntity.setIsAnonymous(domain.isAnonymous());
-        jpaEntity.setUpvotes(domain.getUpvotes());
         jpaEntity.setReportedAt(domain.getReportedAt());
 
         return jpaEntity;

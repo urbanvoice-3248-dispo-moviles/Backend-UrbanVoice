@@ -46,9 +46,6 @@ public class IncidentReportResponse {
     @JsonProperty("is_anonymous")
     private Boolean isAnonymous;
 
-    @JsonProperty("votos_positivos")
-    private Integer upvotes;
-
     @JsonProperty("reported_at")
     private LocalDateTime reportedAt;
 }
