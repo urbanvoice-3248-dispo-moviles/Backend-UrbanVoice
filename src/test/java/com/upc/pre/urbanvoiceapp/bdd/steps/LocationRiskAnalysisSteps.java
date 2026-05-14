@@ -1,6 +1,6 @@
 package com.upc.pre.urbanvoiceapp.bdd.steps;
 
-import com.upc.pre.urbanvoiceapp.locations.interfaces.rest.LocationResponse;
+import com.upc.pre.urbanvoiceapp.locations.interfaces.rest.resources.LocationResponse;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;

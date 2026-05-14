@@ -5,10 +5,13 @@ import com.upc.pre.urbanvoiceapp.locations.interfaces.rest.resources.CreateLocat
 import com.upc.pre.urbanvoiceapp.locations.interfaces.rest.resources.LocationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Locations", description = "API para gestionar ubicaciones y zonas de riesgo")
 public class LocationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(LocationController.class);
     private final LocationApplicationService locationService;
 
     public LocationController(LocationApplicationService locationService) {
@@ -29,8 +33,12 @@ public class LocationController {
 
     @PostMapping
     @Operation(summary = "Crear nueva ubicación")
-    public ResponseEntity<LocationResponse> createLocation(@RequestBody CreateLocationResource resource) {
+    public ResponseEntity<LocationResponse> createLocation(@Valid @RequestBody CreateLocationResource resource) {
         try {
+            logger.info("Creando ubicación: lat={}, lon={}, address={}, district={}, riskLevel={}", 
+                    resource.getLatitude(), resource.getLongitude(), resource.getAddress(), 
+                    resource.getDistrict(), resource.getRiskLevel());
+            
             var location = locationService.createLocation(
                     resource.getLatitude(),
                     resource.getLongitude(),
@@ -38,10 +46,17 @@ public class LocationController {
                     resource.getDistrict(),
                     resource.getRiskLevel()
             );
+            
+            logger.info("Ubicación creada exitosamente con ID: {}", location.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(toResponse(location));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
+            logger.warn("Datos inválidos al crear ubicación: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            logger.error("Error al crear ubicación", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -129,6 +144,9 @@ public class LocationController {
     }
 
     private LocationResponse toResponse(com.upc.pre.urbanvoiceapp.locations.domain.entities.Location location) {
+        if (location == null) {
+            return null;
+        }
         LocationResponse response = new LocationResponse();
         response.setId(location.getId());
         response.setLatitude(location.getCoordinate().getLatitude());
