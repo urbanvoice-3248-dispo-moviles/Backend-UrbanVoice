@@ -8,15 +8,15 @@ import com.upc.pre.urbanvoiceapp.reports.application.queries.GetIncidentReportBy
 import com.upc.pre.urbanvoiceapp.reports.application.queries.GetIncidentReportsByUserIdQuery;
 import com.upc.pre.urbanvoiceapp.reports.domain.entities.IncidentReport;
 import com.upc.pre.urbanvoiceapp.reports.domain.exceptions.IncidentReportNotFoundException;
-import com.upc.pre.urbanvoiceapp.reports.domain.exceptions.InvalidIncidentTypeException;
 import com.upc.pre.urbanvoiceapp.reports.domain.repositories.IncidentReportRepository;
 import com.upc.pre.urbanvoiceapp.reports.domain.valueobjects.GeoLocation;
 import com.upc.pre.urbanvoiceapp.reports.domain.valueobjects.IncidentType;
+import com.upc.pre.urbanvoiceapp.shared.domain.events.DomainEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Optional;
 
 /**
@@ -28,9 +28,12 @@ import java.util.Optional;
 public class IncidentReportApplicationService {
 
     private final IncidentReportRepository reportRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public IncidentReportApplicationService(IncidentReportRepository reportRepository) {
+    public IncidentReportApplicationService(IncidentReportRepository reportRepository,
+                                            ApplicationEventPublisher eventPublisher) {
         this.reportRepository = reportRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -63,7 +66,14 @@ public class IncidentReportApplicationService {
         );
 
         report.validate();
-        return reportRepository.save(report);
+        report = reportRepository.save(report);
+
+        report.recordCreation();
+        for (DomainEvent event : report.pullDomainEvents()) {
+            eventPublisher.publishEvent(event);
+        }
+
+        return report;
     }
 
     /**
@@ -122,5 +132,13 @@ public class IncidentReportApplicationService {
     @Transactional(readOnly = true)
     public List<IncidentReport> handle(FindNearbyIncidentsQuery query) {
         return reportRepository.findNearby(query.getLatitude(), query.getLongitude(), query.getRadiusInKm());
+    }
+
+    /**
+     * Obtiene todos los reportes (para moderación).
+     */
+    @Transactional(readOnly = true)
+    public List<IncidentReport> getAllReports() {
+        return reportRepository.findAll();
     }
 }

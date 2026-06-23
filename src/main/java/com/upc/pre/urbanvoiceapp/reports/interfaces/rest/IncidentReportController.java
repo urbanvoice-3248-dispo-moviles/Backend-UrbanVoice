@@ -81,6 +81,20 @@ public class IncidentReportController {
         }
     }
 
+    @GetMapping("/all")
+    @Operation(summary = "Obtener todos los reportes (moderación)")
+    public ResponseEntity<List<IncidentReportResponse>> getAllIncidentReports() {
+        try {
+            var reports = reportService.getAllReports();
+            var responses = reports.stream()
+                    .map(reportAssembler::toResponse)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/nearby")
     @Operation(summary = "Obtener reportes cercanos a una ubicación")
     public ResponseEntity<List<IncidentReportResponse>> getNearbyIncidents(
