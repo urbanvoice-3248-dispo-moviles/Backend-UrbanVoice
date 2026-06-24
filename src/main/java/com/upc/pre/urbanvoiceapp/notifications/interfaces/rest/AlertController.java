@@ -71,9 +71,6 @@ public class AlertController {
     public ResponseEntity<List<AlertResponse>> getAllAlerts() {
         try {
             var alerts = alertService.findAll();
-            if (alerts.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
             var responses = alerts.stream().map(this::toResponse).collect(Collectors.toList());
             return ResponseEntity.ok(responses);
         } catch (Exception e) {
