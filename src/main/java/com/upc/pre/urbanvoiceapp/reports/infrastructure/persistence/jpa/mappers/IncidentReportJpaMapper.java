@@ -7,11 +7,20 @@ import com.upc.pre.urbanvoiceapp.reports.infrastructure.persistence.jpa.entities
 import org.springframework.stereotype.Component;
 
 /**
- * Mapper para convertir entre el modelo de Dominio (IncidentReport) y la entidad JPA.
+ * Mapper para convertir entre el modelo de Dominio {@link IncidentReport} y la entidad JPA.
+ *
+ * <p>Mantiene aislado al dominio de las anotaciones y convenciones de
+ * persistencia usadas por Spring Data JPA.</p>
  */
 @Component
 public class IncidentReportJpaMapper {
 
+    /**
+     * Convierte una entidad JPA en agregado de dominio.
+     *
+     * @param jpaEntity entidad persistida; puede ser {@code null}.
+     * @return agregado de dominio equivalente, o {@code null} si la entrada es {@code null}.
+     */
     public IncidentReport toDomain(IncidentReportJpaEntity jpaEntity) {
         if (jpaEntity == null) {
             return null;
@@ -44,6 +53,12 @@ public class IncidentReportJpaMapper {
         return report;
     }
 
+    /**
+     * Convierte un agregado de dominio en entidad JPA.
+     *
+     * @param domain agregado de dominio; puede ser {@code null}.
+     * @return entidad persistible equivalente, o {@code null} si la entrada es {@code null}.
+     */
     public IncidentReportJpaEntity toJpa(IncidentReport domain) {
         if (domain == null) {
             return null;

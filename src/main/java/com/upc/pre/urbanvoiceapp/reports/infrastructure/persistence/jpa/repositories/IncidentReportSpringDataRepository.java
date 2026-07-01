@@ -9,15 +9,27 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Spring Data JPA Repository para operaciones de persistencia de IncidentReportJpaEntity.
+ * Spring Data JPA Repository para operaciones de persistencia de {@link IncidentReportJpaEntity}.
  */
 @Repository
 public interface IncidentReportSpringDataRepository extends JpaRepository<IncidentReportJpaEntity, Long> {
+
+    /**
+     * Busca entidades de reportes creadas por un usuario.
+     *
+     * @param userId identificador del usuario.
+     * @return entidades asociadas al usuario indicado.
+     */
     List<IncidentReportJpaEntity> findByUserId(Long userId);
 
     /**
-     * Query para encontrar reportes cercanos usando cálculo de distancia.
-     * Utiliza la fórmula de Haversine.
+     * Query para encontrar reportes cercanos usando calculo de distancia.
+     * Utiliza la formula de Haversine.
+     *
+     * @param latitude latitud del punto central.
+     * @param longitude longitud del punto central.
+     * @param radiusInKm radio maximo en kilometros.
+     * @return entidades dentro del radio indicado, ordenadas por fecha descendente.
      */
     @Query(value = "SELECT * FROM incident_reports WHERE " +
             "( 6371 * acos( cos( radians(:latitude) ) * cos( radians( latitude ) ) * " +

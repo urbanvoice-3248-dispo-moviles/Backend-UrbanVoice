@@ -10,7 +10,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Implementación de IncidentReportRepository utilizando Spring Data JPA.
+ * Implementacion de {@link IncidentReportRepository} utilizando Spring Data JPA.
+ *
+ * <p>Adapta el contrato de dominio al repositorio Spring Data y aplica el mapper
+ * para mantener separadas las representaciones de dominio y persistencia.</p>
  */
 @Repository
 public class JpaIncidentReportRepository implements IncidentReportRepository {
@@ -18,11 +21,23 @@ public class JpaIncidentReportRepository implements IncidentReportRepository {
     private final IncidentReportSpringDataRepository springDataRepository;
     private final IncidentReportJpaMapper mapper;
 
+    /**
+     * Construye el adaptador de persistencia.
+     *
+     * @param springDataRepository repositorio Spring Data de entidades JPA.
+     * @param mapper conversor entre entidades JPA y agregados de dominio.
+     */
     public JpaIncidentReportRepository(IncidentReportSpringDataRepository springDataRepository, IncidentReportJpaMapper mapper) {
         this.springDataRepository = springDataRepository;
         this.mapper = mapper;
     }
 
+    /**
+     * Guarda un agregado despues de validar sus invariantes.
+     *
+     * @param report agregado a persistir.
+     * @return agregado persistido reconstruido desde la entidad guardada.
+     */
     @Override
     public IncidentReport save(IncidentReport report) {
         report.validate();
@@ -31,11 +46,23 @@ public class JpaIncidentReportRepository implements IncidentReportRepository {
         return mapper.toDomain(savedEntity);
     }
 
+    /**
+     * Busca un reporte por identificador.
+     *
+     * @param id identificador del reporte.
+     * @return reporte encontrado o vacio si no existe.
+     */
     @Override
     public Optional<IncidentReport> findById(Long id) {
         return springDataRepository.findById(id).map(mapper::toDomain);
     }
 
+    /**
+     * Busca reportes asociados a un usuario.
+     *
+     * @param userId identificador del usuario.
+     * @return reportes del usuario indicado.
+     */
     @Override
     public List<IncidentReport> findByUserId(Long userId) {
         return springDataRepository.findByUserId(userId).stream()
@@ -43,6 +70,14 @@ public class JpaIncidentReportRepository implements IncidentReportRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Busca reportes cercanos a una coordenada.
+     *
+     * @param latitude latitud del punto central.
+     * @param longitude longitud del punto central.
+     * @param radiusInKm radio maximo en kilometros.
+     * @return reportes dentro del radio indicado.
+     */
     @Override
     public List<IncidentReport> findNearby(double latitude, double longitude, double radiusInKm) {
         return springDataRepository.findNearby(latitude, longitude, radiusInKm).stream()
@@ -50,11 +85,21 @@ public class JpaIncidentReportRepository implements IncidentReportRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Elimina el reporte indicado.
+     *
+     * @param id identificador del reporte a eliminar.
+     */
     @Override
     public void deleteById(Long id) {
         springDataRepository.deleteById(id);
     }
 
+    /**
+     * Recupera todos los reportes persistidos.
+     *
+     * @return lista completa de reportes.
+     */
     @Override
     public List<IncidentReport> findAll() {
         return springDataRepository.findAll().stream()
