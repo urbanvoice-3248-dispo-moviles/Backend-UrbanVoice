@@ -5,6 +5,15 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entidad de dominio que representa una ubicación reportada dentro de
+ * UrbanVoice.
+ *
+ * <p>Encapsula sus coordenadas geográficas ({@link GeoCoordinate}), la
+ * dirección textual, el distrito al que pertenece y una descripción
+ * opcional. La entidad es responsable de mantener su propia consistencia
+ * mediante {@link #validate()}.</p>
+ */
 @Getter
 public class Location {
     private final Long id;
@@ -26,10 +35,20 @@ public class Location {
         this(null, coordinate, address, district);
     }
 
+    /**
+     * Actualiza la descripción asociada a la ubicación.
+     *
+     * @param description nueva descripción de la ubicación
+     */
     public void updateDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Valida las invariantes de la entidad.
+     *
+     * @throws IllegalStateException si la ubicación no tiene coordenada
+     */
     public void validate() {
         if (coordinate == null) {
             throw new IllegalStateException("Location must have a coordinate");

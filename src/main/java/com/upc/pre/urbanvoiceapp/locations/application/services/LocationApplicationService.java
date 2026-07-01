@@ -9,6 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Servicio de aplicación que orquesta los casos de uso relacionados con las
+ * ubicaciones.
+ *
+ * <p>Coordina la entidad de dominio {@link Location} con el puerto de salida
+ * {@link LocationRepository}, delegando en el dominio las reglas de negocio y
+ * gestionando los límites transaccionales.</p>
+ */
 @Service
 @Transactional
 public class LocationApplicationService {
@@ -19,6 +27,15 @@ public class LocationApplicationService {
         this.locationRepository = locationRepository;
     }
 
+    /**
+     * Crea y persiste una nueva ubicación a partir de sus datos básicos.
+     *
+     * @param latitude  latitud geográfica
+     * @param longitude  longitud geográfica
+     * @param address   dirección textual
+     * @param district  distrito al que pertenece
+     * @return la ubicación creada y persistida
+     */
     public Location createLocation(Double latitude, Double longitude, String address, String district) {
         GeoCoordinate coordinate = new GeoCoordinate(latitude, longitude);
 
