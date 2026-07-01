@@ -9,11 +9,21 @@ import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.resources.UpdateInciden
 import org.springframework.stereotype.Component;
 
 /**
- * Assembler para convertir entre DTOs (Resources) y Commands/Domain Models.
+ * Assembler para convertir entre DTOs (Resources), Commands y Domain Models.
+ *
+ * <p>Centraliza la traduccion de nombres y estructura para que el controlador no
+ * conozca detalles del modelo de dominio ni de los comandos de aplicacion.</p>
  */
 @Component
 public class IncidentReportAssembler {
 
+    /**
+     * Convierte un recurso de creacion en comando de aplicacion.
+     *
+     * @param userId usuario propietario del reporte.
+     * @param resource payload HTTP de creacion.
+     * @return comando listo para el servicio de aplicacion.
+     */
     public CreateIncidentReportCommand toCreateCommand(Long userId, CreateIncidentReportResource resource) {
         return new CreateIncidentReportCommand(
                 userId,
@@ -28,6 +38,13 @@ public class IncidentReportAssembler {
         );
     }
 
+    /**
+     * Convierte un recurso de actualizacion en comando de aplicacion.
+     *
+     * @param reportId identificador del reporte a modificar.
+     * @param resource payload HTTP de actualizacion.
+     * @return comando listo para el servicio de aplicacion.
+     */
     public UpdateIncidentReportCommand toUpdateCommand(Long reportId, UpdateIncidentReportResource resource) {
         return new UpdateIncidentReportCommand(
                 reportId,
@@ -37,6 +54,12 @@ public class IncidentReportAssembler {
         );
     }
 
+    /**
+     * Convierte un agregado de dominio en recurso de respuesta REST.
+     *
+     * @param report agregado de dominio a exponer.
+     * @return DTO serializable para el cliente HTTP.
+     */
     public IncidentReportResponse toResponse(IncidentReport report) {
         IncidentReportResponse response = new IncidentReportResponse();
         response.setId(report.getId());

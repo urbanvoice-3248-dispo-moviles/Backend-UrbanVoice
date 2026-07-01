@@ -22,7 +22,10 @@ import java.util.stream.Collectors;
 
 /**
  * REST Controller para gestionar reportes de incidentes.
- * Endpoints: /api/v1/reports
+ * Endpoints base: {@code /api/v1/reports}.
+ *
+ * <p>Traduce solicitudes HTTP a comandos y queries de aplicacion, y transforma
+ * los agregados resultantes en recursos de respuesta.</p>
  */
 @RestController
 @RequestMapping("/api/v1/reports")
@@ -32,12 +35,25 @@ public class IncidentReportController {
     private final IncidentReportApplicationService reportService;
     private final IncidentReportAssembler reportAssembler;
 
+    /**
+     * Construye el controlador de reportes.
+     *
+     * @param reportService servicio de aplicacion de reportes.
+     * @param reportAssembler assembler de recursos REST y mensajes de aplicacion.
+     */
     public IncidentReportController(IncidentReportApplicationService reportService,
                                    IncidentReportAssembler reportAssembler) {
         this.reportService = reportService;
         this.reportAssembler = reportAssembler;
     }
 
+    /**
+     * Crea un nuevo reporte de incidente para el usuario autenticado por cabecera.
+     *
+     * @param userId identificador de usuario recibido en {@code X-User-ID}.
+     * @param resource payload con los datos del incidente.
+     * @return respuesta HTTP 201 con el reporte creado.
+     */
     @PostMapping
     @Operation(summary = "Crear nuevo reporte de incidente")
     public ResponseEntity<IncidentReportResponse> createIncidentReport(
@@ -49,6 +65,12 @@ public class IncidentReportController {
                 .body(reportAssembler.toResponse(report));
     }
 
+    /**
+     * Obtiene un reporte por identificador.
+     *
+     * @param id identificador del reporte.
+     * @return respuesta HTTP 200 con el reporte encontrado.
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Obtener reporte por ID")
     public ResponseEntity<IncidentReportResponse> getIncidentReportById(@PathVariable Long id) {
@@ -57,6 +79,12 @@ public class IncidentReportController {
         return ResponseEntity.ok(reportAssembler.toResponse(report));
     }
 
+    /**
+     * Lista reportes pertenecientes a un usuario.
+     *
+     * @param userId identificador del usuario.
+     * @return respuesta HTTP 200 con los reportes del usuario.
+     */
     @GetMapping("/user/{userId}")
     @Operation(summary = "Obtener reportes de un usuario")
     public ResponseEntity<List<IncidentReportResponse>> getIncidentReportsByUserId(@PathVariable Long userId) {
@@ -68,8 +96,13 @@ public class IncidentReportController {
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     * Lista todos los reportes disponibles para moderacion.
+     *
+     * @return respuesta HTTP 200 con todos los reportes.
+     */
     @GetMapping("/all")
-    @Operation(summary = "Obtener todos los reportes (moderación)")
+    @Operation(summary = "Obtener todos los reportes (moderacion)")
     public ResponseEntity<List<IncidentReportResponse>> getAllIncidentReports() {
         var reports = reportService.getAllReports();
         var responses = reports.stream()
@@ -78,8 +111,16 @@ public class IncidentReportController {
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     * Busca reportes cercanos a una coordenada.
+     *
+     * @param latitude latitud del punto central.
+     * @param longitude longitud del punto central.
+     * @param radiusInKm radio de busqueda en kilometros; por defecto 5 km.
+     * @return respuesta HTTP 200 con los reportes cercanos.
+     */
     @GetMapping("/nearby")
-    @Operation(summary = "Obtener reportes cercanos a una ubicación")
+    @Operation(summary = "Obtener reportes cercanos a una ubicacion")
     public ResponseEntity<List<IncidentReportResponse>> getNearbyIncidents(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
@@ -92,6 +133,13 @@ public class IncidentReportController {
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     * Actualiza parcialmente un reporte de incidente.
+     *
+     * @param id identificador del reporte a actualizar.
+     * @param resource payload con los campos editables.
+     * @return respuesta HTTP 200 con el reporte actualizado.
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar reporte de incidente")
     public ResponseEntity<IncidentReportResponse> updateIncidentReport(
@@ -102,6 +150,12 @@ public class IncidentReportController {
         return ResponseEntity.ok(reportAssembler.toResponse(report));
     }
 
+    /**
+     * Elimina un reporte de incidente.
+     *
+     * @param id identificador del reporte a eliminar.
+     * @return respuesta HTTP 204 cuando la eliminacion se completa.
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar reporte de incidente")
     public ResponseEntity<Void> deleteIncidentReport(@PathVariable Long id) {
