@@ -10,14 +10,16 @@ public class CreateUserProfileCommand {
     private final String email;
     private final String phoneNumber;
     private final String profileImageUrl;
+    private final String password;
 
-    public CreateUserProfileCommand(String name, String lastName, int age, String email, String phoneNumber, String profileImageUrl) {
+    public CreateUserProfileCommand(String name, String lastName, int age, String email, String phoneNumber, String profileImageUrl, String password) {
         this.name = name;
         this.lastName = lastName;
         this.age = age;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.profileImageUrl = profileImageUrl;
+        this.password = password;
     }
 
     public String getName() {
@@ -42,5 +44,9 @@ public class CreateUserProfileCommand {
 
     public String getProfileImageUrl() {
         return profileImageUrl;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

@@ -37,38 +37,26 @@ public class UserProfileController {
     @PostMapping
     @Operation(summary = "Crear nuevo perfil de usuario")
     public ResponseEntity<UserProfileResponse> createUserProfile(@RequestBody CreateUserProfileResource resource) {
-        try {
-            CreateUserProfileCommand command = userProfileAssembler.toCreateCommand(resource);
-            var userProfile = userProfileService.handle(command);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(userProfileAssembler.toResponse(userProfile));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        CreateUserProfileCommand command = userProfileAssembler.toCreateCommand(resource);
+        var userProfile = userProfileService.handle(command);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userProfileAssembler.toResponse(userProfile));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener perfil de usuario por ID")
     public ResponseEntity<UserProfileResponse> getUserProfileById(@PathVariable Long id) {
-        try {
-            GetUserProfileByIdQuery query = new GetUserProfileByIdQuery(id);
-            var userProfile = userProfileService.handle(query);
-            return ResponseEntity.ok(userProfileAssembler.toResponse(userProfile));
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        GetUserProfileByIdQuery query = new GetUserProfileByIdQuery(id);
+        var userProfile = userProfileService.handle(query);
+        return ResponseEntity.ok(userProfileAssembler.toResponse(userProfile));
     }
 
     @GetMapping("/email/{email}")
     @Operation(summary = "Obtener perfil de usuario por email")
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@PathVariable String email) {
-        try {
-            GetUserProfileByEmailQuery query = new GetUserProfileByEmailQuery(email);
-            var userProfile = userProfileService.handle(query);
-            return ResponseEntity.ok(userProfileAssembler.toResponse(userProfile));
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        GetUserProfileByEmailQuery query = new GetUserProfileByEmailQuery(email);
+        var userProfile = userProfileService.handle(query);
+        return ResponseEntity.ok(userProfileAssembler.toResponse(userProfile));
     }
 
     @PutMapping("/{id}")
@@ -76,24 +64,16 @@ public class UserProfileController {
     public ResponseEntity<UserProfileResponse> updateUserProfile(
             @PathVariable Long id,
             @RequestBody UpdateUserProfileResource resource) {
-        try {
-            UpdateUserProfileCommand command = userProfileAssembler.toUpdateCommand(id, resource);
-            var userProfile = userProfileService.handle(command);
-            return ResponseEntity.ok(userProfileAssembler.toResponse(userProfile));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        UpdateUserProfileCommand command = userProfileAssembler.toUpdateCommand(id, resource);
+        var userProfile = userProfileService.handle(command);
+        return ResponseEntity.ok(userProfileAssembler.toResponse(userProfile));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar perfil de usuario")
-    public ResponseEntity<?> deleteUserProfile(@PathVariable Long id) {
-        try {
-            DeleteUserProfileCommand command = new DeleteUserProfileCommand(id);
-            userProfileService.handle(command);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> deleteUserProfile(@PathVariable Long id) {
+        DeleteUserProfileCommand command = new DeleteUserProfileCommand(id);
+        userProfileService.handle(command);
+        return ResponseEntity.noContent().build();
     }
 }

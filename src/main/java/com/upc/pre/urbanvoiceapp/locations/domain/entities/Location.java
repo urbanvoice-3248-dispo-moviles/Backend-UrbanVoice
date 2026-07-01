@@ -1,81 +1,38 @@
 package com.upc.pre.urbanvoiceapp.locations.domain.entities;
 
 import com.upc.pre.urbanvoiceapp.locations.domain.valueobjects.GeoCoordinate;
-import com.upc.pre.urbanvoiceapp.locations.domain.valueobjects.RiskLevel;
-import com.upc.pre.urbanvoiceapp.shared.domain.events.DomainEvent;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- * Aggregate Root del contexto Location Management.
- * Representa una ubicación o zona con información de riesgo.
- */
 @Getter
-@Setter
 public class Location {
     private final Long id;
     private final GeoCoordinate coordinate;
     private String address;
     private String district;
-    private RiskLevel riskLevel;
-    private int incidentCount;
     private String description;
-    private LocalDateTime lastUpdated;
-    private final List<DomainEvent> domainEvents = new ArrayList<>();
+    private LocalDateTime createdAt;
 
-    public Location(Long id, GeoCoordinate coordinate, String address, String district, RiskLevel riskLevel) {
+    public Location(Long id, GeoCoordinate coordinate, String address, String district) {
         this.id = id;
         this.coordinate = coordinate;
         this.address = address;
         this.district = district;
-        this.riskLevel = riskLevel;
-        this.incidentCount = 0;
-        this.lastUpdated = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
-    /**
-     * Constructor para crear una nueva Location sin ID.
-     */
-    public Location(GeoCoordinate coordinate, String address, String district, RiskLevel riskLevel) {
-        this(null, coordinate, address, district, riskLevel);
+    public Location(GeoCoordinate coordinate, String address, String district) {
+        this(null, coordinate, address, district);
     }
 
-    /**
-     * Incrementa el contador de incidentes y actualiza el nivel de riesgo.
-     */
-    public void incrementIncidentCount() {
-        this.incidentCount++;
-        updateRiskLevel();
-        this.lastUpdated = LocalDateTime.now();
+    public void updateDescription(String description) {
+        this.description = description;
     }
 
-    /**
-     * Actualiza el nivel de riesgo basado en el contador de incidentes.
-     */
-    private void updateRiskLevel() {
-        int newLevel = Math.min(5, this.incidentCount / 2); // Simplificado
-        this.riskLevel = new RiskLevel(newLevel, "Actualizado automáticamente");
-    }
-
-    /**
-     * Valida el estado del agregado.
-     */
     public void validate() {
-        if (coordinate == null || address == null || riskLevel == null) {
-            throw new IllegalStateException("Location must have coordinate, address, and riskLevel");
+        if (coordinate == null) {
+            throw new IllegalStateException("Location must have a coordinate");
         }
-    }
-
-    /**
-     * Obtiene y limpia los eventos registrados.
-     */
-    public List<DomainEvent> pullDomainEvents() {
-        List<DomainEvent> events = new ArrayList<>(domainEvents);
-        domainEvents.clear();
-        return events;
     }
 }

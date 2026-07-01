@@ -23,7 +23,8 @@ public class UserProfileAssembler {
                 resource.getAge() != null ? resource.getAge() : 0,
                 resource.getEmail(),
                 resource.getPhoneNumber(),
-                resource.getProfileImageUrl()
+                resource.getProfileImageUrl(),
+                resource.getPassword()
         );
     }
 

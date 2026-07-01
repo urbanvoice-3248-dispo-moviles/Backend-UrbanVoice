@@ -43,42 +43,39 @@ public class IncidentReportController {
     public ResponseEntity<IncidentReportResponse> createIncidentReport(
             @RequestHeader(value = "X-User-ID", required = true) Long userId,
             @RequestBody CreateIncidentReportResource resource) {
-        try {
-            CreateIncidentReportCommand command = reportAssembler.toCreateCommand(userId, resource);
-            var report = reportService.handle(command);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(reportAssembler.toResponse(report));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        CreateIncidentReportCommand command = reportAssembler.toCreateCommand(userId, resource);
+        var report = reportService.handle(command);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reportAssembler.toResponse(report));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener reporte por ID")
     public ResponseEntity<IncidentReportResponse> getIncidentReportById(@PathVariable Long id) {
-        try {
-            GetIncidentReportByIdQuery query = new GetIncidentReportByIdQuery(id);
-            var report = reportService.handle(query);
-            return report.map(r -> ResponseEntity.ok(reportAssembler.toResponse(r)))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        GetIncidentReportByIdQuery query = new GetIncidentReportByIdQuery(id);
+        var report = reportService.handle(query);
+        return ResponseEntity.ok(reportAssembler.toResponse(report));
     }
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Obtener reportes de un usuario")
     public ResponseEntity<List<IncidentReportResponse>> getIncidentReportsByUserId(@PathVariable Long userId) {
-        try {
-            GetIncidentReportsByUserIdQuery query = new GetIncidentReportsByUserIdQuery(userId);
-            var reports = reportService.handle(query);
-            var responses = reports.stream()
-                    .map(reportAssembler::toResponse)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        GetIncidentReportsByUserIdQuery query = new GetIncidentReportsByUserIdQuery(userId);
+        var reports = reportService.handle(query);
+        var responses = reports.stream()
+                .map(reportAssembler::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "Obtener todos los reportes (moderación)")
+    public ResponseEntity<List<IncidentReportResponse>> getAllIncidentReports() {
+        var reports = reportService.getAllReports();
+        var responses = reports.stream()
+                .map(reportAssembler::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/nearby")
@@ -87,16 +84,12 @@ public class IncidentReportController {
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam(defaultValue = "5.0") Double radiusInKm) {
-        try {
-            FindNearbyIncidentsQuery query = new FindNearbyIncidentsQuery(latitude, longitude, radiusInKm);
-            var reports = reportService.handle(query);
-            var responses = reports.stream()
-                    .map(reportAssembler::toResponse)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        FindNearbyIncidentsQuery query = new FindNearbyIncidentsQuery(latitude, longitude, radiusInKm);
+        var reports = reportService.handle(query);
+        var responses = reports.stream()
+                .map(reportAssembler::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
@@ -104,25 +97,17 @@ public class IncidentReportController {
     public ResponseEntity<IncidentReportResponse> updateIncidentReport(
             @PathVariable Long id,
             @RequestBody UpdateIncidentReportResource resource) {
-        try {
-            UpdateIncidentReportCommand command = reportAssembler.toUpdateCommand(id, resource);
-            var report = reportService.handle(command);
-            return ResponseEntity.ok(reportAssembler.toResponse(report));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        UpdateIncidentReportCommand command = reportAssembler.toUpdateCommand(id, resource);
+        var report = reportService.handle(command);
+        return ResponseEntity.ok(reportAssembler.toResponse(report));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar reporte de incidente")
-    public ResponseEntity<?> deleteIncidentReport(@PathVariable Long id) {
-        try {
-            DeleteIncidentReportCommand command = new DeleteIncidentReportCommand(id);
-            reportService.handle(command);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> deleteIncidentReport(@PathVariable Long id) {
+        DeleteIncidentReportCommand command = new DeleteIncidentReportCommand(id);
+        reportService.handle(command);
+        return ResponseEntity.noContent().build();
     }
 
 }

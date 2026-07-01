@@ -21,6 +21,7 @@ public class UserProfile {
     private PersonalInfo personalInfo;
     private ContactInfo contactInfo;
     private String profileImageUrl;
+    private String password;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private final List<DomainEvent> domainEvents = new ArrayList<>();
@@ -34,11 +35,25 @@ public class UserProfile {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public UserProfile(Long id, PersonalInfo personalInfo, ContactInfo contactInfo, String profileImageUrl, String password) {
+        this.id = id;
+        this.personalInfo = personalInfo;
+        this.contactInfo = contactInfo;
+        this.profileImageUrl = profileImageUrl;
+        this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
     /**
      * Constructor para crear un nuevo UserProfile (sin ID)
      */
     public UserProfile(PersonalInfo personalInfo, ContactInfo contactInfo, String profileImageUrl) {
         this(null, personalInfo, contactInfo, profileImageUrl);
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**

@@ -32,7 +32,8 @@ public class UserProfileJpaMapper {
                 jpaEntity.getId(),
                 personalInfo,
                 contactInfo,
-                jpaEntity.getProfileImageUrl()
+                jpaEntity.getProfileImageUrl(),
+                jpaEntity.getPassword()
         );
 
         return userProfile;
@@ -51,6 +52,7 @@ public class UserProfileJpaMapper {
         jpaEntity.setEmail(domain.getContactInfo().getEmail());
         jpaEntity.setPhoneNumber(domain.getContactInfo().getPhoneNumber());
         jpaEntity.setProfileImageUrl(domain.getProfileImageUrl());
+        jpaEntity.setPassword(domain.getPassword());
         jpaEntity.setCreatedAt(domain.getCreatedAt());
         jpaEntity.setUpdatedAt(domain.getUpdatedAt());
 
