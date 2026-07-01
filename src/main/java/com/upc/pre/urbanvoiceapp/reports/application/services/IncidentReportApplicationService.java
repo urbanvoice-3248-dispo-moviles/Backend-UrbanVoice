@@ -20,7 +20,11 @@ import java.util.List;
 
 /**
  * Application Service para orquestar operaciones sobre reportes de incidentes.
- * Core del negocio de UrbanVoice - gestión de reportes de incidentes.
+ * Core del negocio de UrbanVoice - gestion de reportes de incidentes.
+ *
+ * <p>Coordina comandos y queries del bounded context de reportes, delegando la
+ * persistencia al repositorio de dominio y publicando eventos cuando el agregado
+ * registra cambios relevantes.</p>
  */
 @Service
 @Transactional
@@ -29,6 +33,12 @@ public class IncidentReportApplicationService {
     private final IncidentReportRepository reportRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    /**
+     * Construye el servicio con sus dependencias de infraestructura.
+     *
+     * @param reportRepository repositorio del agregado {@link IncidentReport}.
+     * @param eventPublisher publicador de eventos de Spring para eventos de dominio.
+     */
     public IncidentReportApplicationService(IncidentReportRepository reportRepository,
                                             ApplicationEventPublisher eventPublisher) {
         this.reportRepository = reportRepository;
@@ -36,11 +46,15 @@ public class IncidentReportApplicationService {
     }
 
     /**
-     * Maneja la creación de un nuevo reporte de incidente.
-     * Valida el tipo de incidente y la ubicación antes de crear el reporte.
+     * Maneja la creacion de un nuevo reporte de incidente.
+     * Valida el tipo de incidente y la ubicacion antes de crear el reporte.
+     *
+     * @param command datos necesarios para crear el reporte.
+     * @return reporte persistido con el identificador asignado.
+     * @throws IllegalStateException si el agregado queda en un estado invalido.
      */
     public IncidentReport handle(CreateIncidentReportCommand command) {
-        // Validar que el tipo de incidente sea válido
+        // Validar que el tipo de incidente sea valido
         IncidentType incidentType = new IncidentType(
                 command.getIncidentType(),
                 command.getIncidentType()
@@ -76,19 +90,23 @@ public class IncidentReportApplicationService {
     }
 
     /**
-     * Maneja la actualización de un reporte existente.
-     * Solo permite actualizar reportes que aún no han sido resueltos.
+     * Maneja la actualizacion de un reporte existente.
+     *
+     * @param command cambios parciales solicitados para el reporte.
+     * @return reporte actualizado y persistido.
+     * @throws IncidentReportNotFoundException si no existe un reporte con el ID indicado.
+     * @throws IllegalArgumentException si alguno de los campos editados viola reglas basicas.
      */
     public IncidentReport handle(UpdateIncidentReportCommand command) {
         IncidentReport report = reportRepository.findById(command.getReportId())
                 .orElseThrow(() -> new IncidentReportNotFoundException(command.getReportId()));
 
-        // Actualizar título si se proporciona
+        // Actualizar titulo si se proporciona
         if (command.getTitle() != null) {
             report.setTitle(command.getTitle());
         }
 
-        // Actualizar descripción si se proporciona
+        // Actualizar descripcion si se proporciona
         if (command.getDescription() != null) {
             report.updateDescription(command.getDescription());
         }
@@ -103,7 +121,9 @@ public class IncidentReportApplicationService {
     }
 
     /**
-     * Maneja la eliminación de un reporte.
+     * Maneja la eliminacion de un reporte.
+     *
+     * @param command identificador del reporte a eliminar.
      */
     public void handle(DeleteIncidentReportCommand command) {
         reportRepository.deleteById(command.getReportId());
@@ -111,6 +131,10 @@ public class IncidentReportApplicationService {
 
     /**
      * Maneja la consulta de un reporte por ID.
+     *
+     * @param query identificador del reporte solicitado.
+     * @return reporte encontrado.
+     * @throws IncidentReportNotFoundException si no existe un reporte con el ID indicado.
      */
     @Transactional(readOnly = true)
     public IncidentReport handle(GetIncidentReportByIdQuery query) {
@@ -120,6 +144,9 @@ public class IncidentReportApplicationService {
 
     /**
      * Maneja la consulta de reportes por usuario.
+     *
+     * @param query identificador del usuario consultado.
+     * @return lista de reportes pertenecientes al usuario.
      */
     @Transactional(readOnly = true)
     public List<IncidentReport> handle(GetIncidentReportsByUserIdQuery query) {
@@ -127,7 +154,10 @@ public class IncidentReportApplicationService {
     }
 
     /**
-     * Maneja la consulta de reportes cercanos a una ubicación.
+     * Maneja la consulta de reportes cercanos a una ubicacion.
+     *
+     * @param query punto central y radio de busqueda.
+     * @return lista de reportes dentro del radio indicado.
      */
     @Transactional(readOnly = true)
     public List<IncidentReport> handle(FindNearbyIncidentsQuery query) {
@@ -135,7 +165,9 @@ public class IncidentReportApplicationService {
     }
 
     /**
-     * Obtiene todos los reportes (para moderación).
+     * Obtiene todos los reportes (para moderacion).
+     *
+     * @return lista completa de reportes registrados.
      */
     @Transactional(readOnly = true)
     public List<IncidentReport> getAllReports() {
