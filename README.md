@@ -413,6 +413,9 @@ Entre los avances principales se encuentran:
 * Agregar docker-compose para levantar backend y base de datos juntos.
 * Mejorar la documentación de despliegue en la nube.
 
+
+#Proyecto en desarrollo y conclusiones 
+
 ## Conclusión
 
 UrbanVoice Backend proporciona la API principal para la aplicación móvil UrbanVoice. Su estructura modular, el uso de Spring Boot, PostgreSQL, JWT y una organización basada en DDD permiten construir una base sólida para una solución de reportes ciudadanos escalable y mantenible.
