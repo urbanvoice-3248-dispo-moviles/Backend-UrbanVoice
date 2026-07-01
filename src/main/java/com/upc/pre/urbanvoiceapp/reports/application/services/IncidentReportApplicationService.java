@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Application Service para orquestar operaciones sobre reportes de incidentes.
@@ -114,8 +113,9 @@ public class IncidentReportApplicationService {
      * Maneja la consulta de un reporte por ID.
      */
     @Transactional(readOnly = true)
-    public Optional<IncidentReport> handle(GetIncidentReportByIdQuery query) {
-        return reportRepository.findById(query.getReportId());
+    public IncidentReport handle(GetIncidentReportByIdQuery query) {
+        return reportRepository.findById(query.getReportId())
+                .orElseThrow(() -> new IncidentReportNotFoundException(query.getReportId()));
     }
 
     /**

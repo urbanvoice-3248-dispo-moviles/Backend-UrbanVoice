@@ -1,13 +1,13 @@
 package com.upc.pre.urbanvoiceapp.locations.application.services;
 
 import com.upc.pre.urbanvoiceapp.locations.domain.entities.Location;
+import com.upc.pre.urbanvoiceapp.locations.domain.exceptions.LocationNotFoundException;
 import com.upc.pre.urbanvoiceapp.locations.domain.repositories.LocationRepository;
 import com.upc.pre.urbanvoiceapp.locations.domain.valueobjects.GeoCoordinate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -29,8 +29,9 @@ public class LocationApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Location> getLocationById(Long id) {
-        return locationRepository.findById(id);
+    public Location getLocationById(Long id) {
+        return locationRepository.findById(id)
+                .orElseThrow(() -> new LocationNotFoundException(id));
     }
 
     @Transactional(readOnly = true)

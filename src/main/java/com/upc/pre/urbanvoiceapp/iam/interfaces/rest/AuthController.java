@@ -31,44 +31,21 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Iniciar sesión y obtener token JWT")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            var userProfile = userProfileRepository.findByEmail(request.getEmail())
-                    .orElse(null);
+        var userProfile = userProfileRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
-            if (userProfile == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse("Invalid email or password"));
-            }
-
-            if (!passwordEncoder.matches(request.getPassword(), userProfile.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ErrorResponse("Invalid email or password"));
-            }
-
-            String token = jwtUtil.generateToken(userProfile.getId(), userProfile.getContactInfo().getEmail());
-
-            LoginResponse response = new LoginResponse(
-                    userProfile.getId(),
-                    userProfile.getContactInfo().getEmail(),
-                    token
-            );
-
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Internal server error"));
-        }
-    }
-
-    private static class ErrorResponse {
-        private final String message;
-
-        public ErrorResponse(String message) {
-            this.message = message;
+        if (!passwordEncoder.matches(request.getPassword(), userProfile.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password");
         }
 
-        public String getMessage() {
-            return message;
-        }
+        String token = jwtUtil.generateToken(userProfile.getId(), userProfile.getContactInfo().getEmail());
+
+        LoginResponse response = new LoginResponse(
+                userProfile.getId(),
+                userProfile.getContactInfo().getEmail(),
+                token
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

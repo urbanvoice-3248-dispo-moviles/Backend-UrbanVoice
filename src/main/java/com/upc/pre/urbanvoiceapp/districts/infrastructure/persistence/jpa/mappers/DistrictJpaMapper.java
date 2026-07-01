@@ -69,7 +69,7 @@ public class DistrictJpaMapper {
         try {
             List<PointDto> dtos = objectMapper.readValue(json, new TypeReference<List<PointDto>>() {});
             return dtos.stream()
-                    .map(d -> new GeoPoint(d.getLatitude(), d.getLongitude()))
+                    .map(d -> new GeoPoint(d.latitude(), d.longitude()))
                     .toList();
         } catch (Exception e) {
             return Collections.emptyList();

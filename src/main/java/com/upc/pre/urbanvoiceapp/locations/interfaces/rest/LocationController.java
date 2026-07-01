@@ -30,54 +30,32 @@ public class LocationController {
     @PostMapping
     @Operation(summary = "Crear nueva ubicación exacta")
     public ResponseEntity<LocationResponse> createLocation(@Valid @RequestBody CreateLocationResource resource) {
-        try {
-            logger.info("Creando ubicación: lat={}, lon={}, address={}, district={}",
-                    resource.getLatitude(), resource.getLongitude(), resource.getAddress(),
-                    resource.getDistrict());
+        var location = locationService.createLocation(
+                resource.getLatitude(),
+                resource.getLongitude(),
+                resource.getAddress(),
+                resource.getDistrict()
+        );
 
-            var location = locationService.createLocation(
-                    resource.getLatitude(),
-                    resource.getLongitude(),
-                    resource.getAddress(),
-                    resource.getDistrict()
-            );
-
-            logger.info("Ubicación creada exitosamente con ID: {}", location.getId());
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(toResponse(location));
-        } catch (IllegalArgumentException e) {
-            logger.warn("Datos inválidos al crear ubicación: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Error al crear ubicación", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(toResponse(location));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener ubicación por ID")
     public ResponseEntity<LocationResponse> getLocationById(@PathVariable Long id) {
-        try {
-            var location = locationService.getLocationById(id);
-            return location.map(l -> ResponseEntity.ok(toResponse(l)))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var location = locationService.getLocationById(id);
+        return ResponseEntity.ok(toResponse(location));
     }
 
     @GetMapping
     @Operation(summary = "Obtener todas las ubicaciones")
     public ResponseEntity<List<LocationResponse>> getAllLocations() {
-        try {
-            var locations = locationService.getAllLocations();
-            var responses = locations.stream()
-                    .map(this::toResponse)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var locations = locationService.getAllLocations();
+        var responses = locations.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/nearby")
@@ -86,40 +64,28 @@ public class LocationController {
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam(defaultValue = "5.0") Double radiusInKm) {
-        try {
-            var locations = locationService.getNearbyLocations(latitude, longitude, radiusInKm);
-            var responses = locations.stream()
-                    .map(this::toResponse)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var locations = locationService.getNearbyLocations(latitude, longitude, radiusInKm);
+        var responses = locations.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/district/{district}")
     @Operation(summary = "Obtener ubicaciones por distrito")
     public ResponseEntity<List<LocationResponse>> getLocationsByDistrict(@PathVariable String district) {
-        try {
-            var locations = locationService.getLocationsByDistrict(district);
-            var responses = locations.stream()
-                    .map(this::toResponse)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var locations = locationService.getLocationsByDistrict(district);
+        var responses = locations.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar ubicación")
-    public ResponseEntity<?> deleteLocation(@PathVariable Long id) {
-        try {
-            locationService.deleteLocation(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> deleteLocation(@PathVariable Long id) {
+        locationService.deleteLocation(id);
+        return ResponseEntity.noContent().build();
     }
 
     private LocationResponse toResponse(com.upc.pre.urbanvoiceapp.locations.domain.entities.Location location) {

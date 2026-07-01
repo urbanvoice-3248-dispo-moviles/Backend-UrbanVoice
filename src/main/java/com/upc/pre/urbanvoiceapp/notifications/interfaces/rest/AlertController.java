@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,77 +28,53 @@ public class AlertController {
     @PostMapping
     @Operation(summary = "Crear nueva alerta")
     public ResponseEntity<AlertResponse> createAlert(@RequestBody CreateAlertResource resource) {
-        try {
-            var alert = alertService.createAlert(
-                    resource.getUserId(),
-                    resource.getType(),
-                    resource.getTitle(),
-                    resource.getMessage(),
-                    resource.getLatitude(),
-                    resource.getLongitude()
-            );
-            URI location = URI.create("/api/v1/alerts/" + alert.getId());
-            return ResponseEntity.created(location).body(toResponse(alert));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var alert = alertService.createAlert(
+                resource.getUserId(),
+                resource.getType(),
+                resource.getTitle(),
+                resource.getMessage(),
+                resource.getLatitude(),
+                resource.getLongitude()
+        );
+        URI location = URI.create("/api/v1/alerts/" + alert.getId());
+        return ResponseEntity.created(location).body(toResponse(alert));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener alerta por ID")
     public ResponseEntity<AlertResponse> getAlertById(@PathVariable Long id) {
-        try {
-            var alert = alertService.findById(id);
-            return ResponseEntity.ok(toResponse(alert));
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        var alert = alertService.findById(id);
+        return ResponseEntity.ok(toResponse(alert));
     }
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Obtener alertas por usuario")
     public ResponseEntity<List<AlertResponse>> getAlertsByUserId(@PathVariable Long userId) {
-        try {
-            var alerts = alertService.findByUserId(userId);
-            var responses = alerts.stream().map(this::toResponse).collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var alerts = alertService.findByUserId(userId);
+        var responses = alerts.stream().map(this::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping
     @Operation(summary = "Obtener todas las alertas")
     public ResponseEntity<List<AlertResponse>> getAllAlerts() {
-        try {
-            var alerts = alertService.findAll();
-            var responses = alerts.stream().map(this::toResponse).collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var alerts = alertService.findAll();
+        var responses = alerts.stream().map(this::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar alerta por ID")
-    public ResponseEntity<?> deleteAlertById(@PathVariable Long id) {
-        try {
-            alertService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Void> deleteAlertById(@PathVariable Long id) {
+        alertService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
     @Operation(summary = "Eliminar todas las alertas")
-    public ResponseEntity<?> deleteAllAlerts() {
-        try {
-            alertService.deleteAll();
-            return ResponseEntity.ok(java.util.Map.of("message", "All alerts have been deleted"));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<Map<String, String>> deleteAllAlerts() {
+        alertService.deleteAll();
+        return ResponseEntity.ok(Map.of("message", "All alerts have been deleted"));
     }
 
     private AlertResponse toResponse(com.upc.pre.urbanvoiceapp.notifications.domain.entities.Alert alert) {
