@@ -1,6 +1,6 @@
 # UrbanVoice Backend
 
-Backend para la aplicación UrbanVoice - Reporte ciudadano de incidentes. Construido con Java 23 y Spring Boot 3.3.3.
+Backend para la aplicacion UrbanVoice - Reporte ciudadano de incidentes. Construido con Java 21 y Spring Boot 3.3.4.
 
 ## Arquitectura
 
@@ -39,8 +39,8 @@ El proyecto sigue una arquitectura hexagonal (DDD) con los siguientes bounded co
 - `DELETE /{id}` - Eliminar ubicación
 
 ## Requisitos
-- JDK 23
-- Maven 3.6+
+- JDK 21
+- Maven 3.6+ o Maven Wrapper incluido en el proyecto
 - PostgreSQL
 
 ## Ejecutar
