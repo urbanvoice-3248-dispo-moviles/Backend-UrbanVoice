@@ -9,6 +9,8 @@ El proyecto sigue una arquitectura hexagonal (DDD) con los siguientes bounded co
 - **Reports**: Reporte de incidentes ciudadanos
 - **Locations**: Ubicaciones y zonas de riesgo
 - **Notifications**: Sistema de notificaciones y alertas
+- **Districts**: Gestion de distritos y niveles de riesgo
+- **IAM**: Autenticacion de usuarios y seguridad con JWT
 
 ## Endpoints API
 
