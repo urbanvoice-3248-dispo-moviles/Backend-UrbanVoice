@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * Implementación de LocationRepository utilizando Spring Data JPA.
- */
 @Repository
 public class JpaLocationRepository implements LocationRepository {
 
@@ -46,13 +43,6 @@ public class JpaLocationRepository implements LocationRepository {
     @Override
     public List<Location> findByDistrict(String district) {
         return springDataRepository.findByDistrict(district).stream()
-                .map(mapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Location> findByRiskLevelGreaterThan(int minLevel) {
-        return springDataRepository.findByRiskLevelGreaterThan(minLevel).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }

@@ -11,6 +11,7 @@ import com.upc.pre.urbanvoiceapp.profiles.domain.exceptions.UserProfileNotFoundE
 import com.upc.pre.urbanvoiceapp.profiles.domain.repositories.UserProfileRepository;
 import com.upc.pre.urbanvoiceapp.profiles.domain.valueobjects.ContactInfo;
 import com.upc.pre.urbanvoiceapp.profiles.domain.valueobjects.PersonalInfo;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +26,11 @@ import java.util.List;
 public class UserProfileApplicationService {
 
     private final UserProfileRepository userProfileRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserProfileApplicationService(UserProfileRepository userProfileRepository) {
+    public UserProfileApplicationService(UserProfileRepository userProfileRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userProfileRepository = userProfileRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -54,6 +57,7 @@ public class UserProfileApplicationService {
 
         // Crear el agregado de dominio
         UserProfile userProfile = new UserProfile(personalInfo, contactInfo, command.getProfileImageUrl());
+        userProfile.setPassword(passwordEncoder.encode(command.getPassword()));
         userProfile.validate();
         
         // Persistir usando el repositorio

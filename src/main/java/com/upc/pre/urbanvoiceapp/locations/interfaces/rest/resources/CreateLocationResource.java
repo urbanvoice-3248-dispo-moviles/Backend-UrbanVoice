@@ -10,9 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * DTO para crear una nueva ubicación.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,13 +31,6 @@ public class CreateLocationResource {
     @JsonProperty("address")
     private String address;
 
-    @NotBlank(message = "District is required")
     @JsonProperty("district")
     private String district;
-
-    @NotNull(message = "Risk level is required")
-    @Min(value = 0, message = "Risk level must be between 0 and 5")
-    @Max(value = 5, message = "Risk level must be between 0 and 5")
-    @JsonProperty("risk_level")
-    private Integer riskLevel;
 }

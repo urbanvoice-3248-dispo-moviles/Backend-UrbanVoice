@@ -8,9 +8,6 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO para responder con la información de una ubicación.
- */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,18 +28,9 @@ public class LocationResponse {
     @JsonProperty("district")
     private String district;
 
-    @JsonProperty("risk_level")
-    private Integer riskLevel;
-
-    @JsonProperty("risk_category")
-    private String riskCategory;
-
-    @JsonProperty("incident_count")
-    private Integer incidentCount;
-
     @JsonProperty("description")
     private String description;
 
-    @JsonProperty("last_updated")
-    private LocalDateTime lastUpdated;
+    @JsonProperty("created_at")
+    private LocalDateTime createdAt;
 }

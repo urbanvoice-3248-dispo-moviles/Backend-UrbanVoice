@@ -15,13 +15,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * REST Controller para gestionar ubicaciones y zonas de riesgo.
- * Endpoints: /api/v1/locations
- */
 @RestController
 @RequestMapping("/api/v1/locations")
-@Tag(name = "Locations", description = "API para gestionar ubicaciones y zonas de riesgo")
+@Tag(name = "Locations", description = "API para gestionar ubicaciones exactas de reportes y alertas")
 public class LocationController {
 
     private static final Logger logger = LoggerFactory.getLogger(LocationController.class);
@@ -32,21 +28,20 @@ public class LocationController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear nueva ubicación")
+    @Operation(summary = "Crear nueva ubicación exacta")
     public ResponseEntity<LocationResponse> createLocation(@Valid @RequestBody CreateLocationResource resource) {
         try {
-            logger.info("Creando ubicación: lat={}, lon={}, address={}, district={}, riskLevel={}", 
-                    resource.getLatitude(), resource.getLongitude(), resource.getAddress(), 
-                    resource.getDistrict(), resource.getRiskLevel());
-            
+            logger.info("Creando ubicación: lat={}, lon={}, address={}, district={}",
+                    resource.getLatitude(), resource.getLongitude(), resource.getAddress(),
+                    resource.getDistrict());
+
             var location = locationService.createLocation(
                     resource.getLatitude(),
                     resource.getLongitude(),
                     resource.getAddress(),
-                    resource.getDistrict(),
-                    resource.getRiskLevel()
+                    resource.getDistrict()
             );
-            
+
             logger.info("Ubicación creada exitosamente con ID: {}", location.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(toResponse(location));
@@ -55,7 +50,6 @@ public class LocationController {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             logger.error("Error al crear ubicación", e);
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -117,21 +111,6 @@ public class LocationController {
         }
     }
 
-    @GetMapping("/dangerous")
-    @Operation(summary = "Obtener ubicaciones peligrosas")
-    public ResponseEntity<List<LocationResponse>> getDangerousLocations(
-            @RequestParam(defaultValue = "3") Integer minRiskLevel) {
-        try {
-            var locations = locationService.getDangerousLocations(minRiskLevel);
-            var responses = locations.stream()
-                    .map(this::toResponse)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(responses);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar ubicación")
     public ResponseEntity<?> deleteLocation(@PathVariable Long id) {
@@ -144,20 +123,15 @@ public class LocationController {
     }
 
     private LocationResponse toResponse(com.upc.pre.urbanvoiceapp.locations.domain.entities.Location location) {
-        if (location == null) {
-            return null;
-        }
+        if (location == null) return null;
         LocationResponse response = new LocationResponse();
         response.setId(location.getId());
         response.setLatitude(location.getCoordinate().getLatitude());
         response.setLongitude(location.getCoordinate().getLongitude());
         response.setAddress(location.getAddress());
         response.setDistrict(location.getDistrict());
-        response.setRiskLevel(location.getRiskLevel().getLevel());
-        response.setRiskCategory(location.getRiskLevel().getRiskCategory());
-        response.setIncidentCount(location.getIncidentCount());
         response.setDescription(location.getDescription());
-        response.setLastUpdated(location.getLastUpdated());
+        response.setCreatedAt(location.getCreatedAt());
         return response;
     }
 }
