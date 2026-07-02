@@ -37,4 +37,7 @@ public class CreateIncidentReportResource {
 
     @JsonProperty("is_anonymous")
     private Boolean isAnonymous = false;
+
+    @JsonProperty("reported_at")
+    private String reportedAt;
 }

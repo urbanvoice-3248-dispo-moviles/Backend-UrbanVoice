@@ -11,6 +11,7 @@ import com.upc.pre.urbanvoiceapp.districts.domain.repositories.DistrictRepositor
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.upc.pre.urbanvoiceapp.districts.domain.valueobjects.GeoPoint;
 import java.util.List;
 
 @Service
@@ -109,5 +110,58 @@ public class DistrictApplicationService {
     @Transactional(readOnly = true)
     public List<District> getDangerousDistricts(int minRiskLevel) {
         return districtRepository.findByRiskLevelGreaterThan(minRiskLevel);
+    }
+
+    public void recordIncidentAtLocation(double lat, double lng) {
+        List<District> allDistricts = districtRepository.findAll();
+        District matched = findDistrictForPoint(lat, lng, allDistricts);
+        if (matched == null) return;
+
+        matched.incrementIncidentCount();
+        int newRisk = calculateRiskFromIncidentCount(matched.getIncidentCount());
+        String category = switch (newRisk) {
+            case 0, 1 -> "SEGURO";
+            case 2, 3 -> "MODERADO";
+            default -> "PELIGROSO";
+        };
+        if (newRisk != matched.getRiskLevel()) {
+            matched.updateRiskLevel(newRisk, "Riesgo " + category.toLowerCase() + " - " + matched.getIncidentCount() + " incidente(s)");
+        }
+        districtRepository.save(matched);
+    }
+
+    private District findDistrictForPoint(double lat, double lng, List<District> districts) {
+        for (District district : districts) {
+            if (isPointInPolygon(lat, lng, district.getBoundary())) {
+                return district;
+            }
+        }
+        return null;
+    }
+
+    private boolean isPointInPolygon(double px, double py, List<GeoPoint> polygon) {
+        if (polygon == null || polygon.size() < 3) return false;
+        boolean inside = false;
+        int n = polygon.size();
+        for (int i = 0, j = n - 1; i < n; j = i++) {
+            double xi = polygon.get(i).getLatitude();
+            double yi = polygon.get(i).getLongitude();
+            double xj = polygon.get(j).getLatitude();
+            double yj = polygon.get(j).getLongitude();
+            if ((yi > py) != (yj > py) &&
+                    px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+
+    private int calculateRiskFromIncidentCount(int count) {
+        if (count <= 0) return 0;
+        if (count <= 2) return 1;
+        if (count <= 5) return 2;
+        if (count <= 10) return 3;
+        if (count <= 20) return 4;
+        return 5;
     }
 }

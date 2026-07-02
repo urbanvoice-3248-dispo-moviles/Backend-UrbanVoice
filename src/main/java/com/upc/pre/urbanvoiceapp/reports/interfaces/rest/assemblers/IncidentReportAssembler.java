@@ -24,7 +24,8 @@ public class IncidentReportAssembler {
                 resource.getLongitude(),
                 resource.getAddress(),
                 resource.getMediaUrl(),
-                resource.getIsAnonymous()
+                resource.getIsAnonymous(),
+                resource.getReportedAt()
         );
     }
 

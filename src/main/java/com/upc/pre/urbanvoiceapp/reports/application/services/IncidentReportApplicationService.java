@@ -17,6 +17,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +67,12 @@ public class IncidentReportApplicationService {
                 command.getMediaUrl(),
                 command.getIsAnonymous()
         );
+
+        if (command.getReportedAt() != null) {
+            try {
+                report.setReportedAt(LocalDateTime.parse(command.getReportedAt(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            } catch (Exception ignored) {}
+        }
 
         report.validate();
         report = reportRepository.save(report);

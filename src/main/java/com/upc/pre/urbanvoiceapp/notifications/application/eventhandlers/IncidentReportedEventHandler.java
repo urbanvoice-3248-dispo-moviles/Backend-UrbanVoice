@@ -1,5 +1,6 @@
 package com.upc.pre.urbanvoiceapp.notifications.application.eventhandlers;
 
+import com.upc.pre.urbanvoiceapp.districts.application.services.DistrictApplicationService;
 import com.upc.pre.urbanvoiceapp.notifications.domain.entities.Alert;
 import com.upc.pre.urbanvoiceapp.notifications.domain.repositories.AlertRepository;
 import com.upc.pre.urbanvoiceapp.notifications.domain.services.AlertDomainService;
@@ -15,13 +16,16 @@ public class IncidentReportedEventHandler {
     private final AlertDomainService alertService;
     private final AlertRepository alertRepository;
     private final UserProfileRepository userProfileRepository;
+    private final DistrictApplicationService districtService;
 
     public IncidentReportedEventHandler(AlertDomainService alertService,
                                         AlertRepository alertRepository,
-                                        UserProfileRepository userProfileRepository) {
+                                        UserProfileRepository userProfileRepository,
+                                        DistrictApplicationService districtService) {
         this.alertService = alertService;
         this.alertRepository = alertRepository;
         this.userProfileRepository = userProfileRepository;
+        this.districtService = districtService;
     }
 
     @EventListener
@@ -43,5 +47,7 @@ public class IncidentReportedEventHandler {
             alertRepository.save(alert);
             alertService.sendPushNotification(alert);
         });
+
+        districtService.recordIncidentAtLocation(event.getLatitude(), event.getLongitude());
     }
 }
