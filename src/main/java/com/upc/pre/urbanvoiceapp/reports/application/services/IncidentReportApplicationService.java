@@ -11,12 +11,14 @@ import com.upc.pre.urbanvoiceapp.reports.domain.exceptions.IncidentReportNotFoun
 import com.upc.pre.urbanvoiceapp.reports.domain.repositories.IncidentReportRepository;
 import com.upc.pre.urbanvoiceapp.reports.domain.valueobjects.GeoLocation;
 import com.upc.pre.urbanvoiceapp.reports.domain.valueobjects.IncidentType;
+import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.resources.StatisticsResponse;
 import com.upc.pre.urbanvoiceapp.shared.domain.events.DomainEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Application Service para orquestar operaciones sobre reportes de incidentes.
@@ -143,12 +145,11 @@ public class IncidentReportApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public java.util.Map<String, Object> getStatistics() {
-        java.util.Map<String, Object> stats = new java.util.HashMap<>();
-        stats.put("total_reports", reportRepository.count());
-        stats.put("reports_by_type", reportRepository.countByIncidentType());
-        stats.put("reports_by_status", reportRepository.countByStatus());
-        return stats;
+    public StatisticsResponse getStatistics() {
+        long total = reportRepository.count();
+        Map<String, Long> byType = reportRepository.countByIncidentType();
+        Map<String, Long> byStatus = reportRepository.countByStatus();
+        return new StatisticsResponse(total, byType, byStatus);
     }
 
     public IncidentReport approveReport(Long reportId) {

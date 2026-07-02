@@ -10,6 +10,7 @@ import com.upc.pre.urbanvoiceapp.reports.application.services.IncidentReportAppl
 import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.assemblers.IncidentReportAssembler;
 import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.resources.CreateIncidentReportResource;
 import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.resources.IncidentReportResponse;
+import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.resources.StatisticsResponse;
 import com.upc.pre.urbanvoiceapp.reports.interfaces.rest.resources.UpdateIncidentReportResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -80,7 +81,7 @@ public class IncidentReportController {
 
     @GetMapping("/statistics")
     @Operation(summary = "Obtener estadísticas de reportes")
-    public ResponseEntity<java.util.Map<String, Object>> getStatistics() {
+    public ResponseEntity<StatisticsResponse> getStatistics() {
         return ResponseEntity.ok(reportService.getStatistics());
     }
 

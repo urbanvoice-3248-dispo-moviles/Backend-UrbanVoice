@@ -1,5 +1,6 @@
 package com.upc.pre.urbanvoiceapp.shared.locationsharing.application.services;
 
+import com.upc.pre.urbanvoiceapp.profiles.domain.repositories.UserProfileRepository;
 import com.upc.pre.urbanvoiceapp.shared.locationsharing.domain.entities.LocationShareSession;
 import com.upc.pre.urbanvoiceapp.shared.locationsharing.domain.entities.UserLiveLocation;
 import com.upc.pre.urbanvoiceapp.shared.locationsharing.domain.repositories.LocationShareSessionRepository;
@@ -17,12 +18,15 @@ public class LocationSharingApplicationService {
 
     private final UserLiveLocationRepository userLiveLocationRepository;
     private final LocationShareSessionRepository shareSessionRepository;
+    private final UserProfileRepository profileRepository;
 
     public LocationSharingApplicationService(
             UserLiveLocationRepository userLiveLocationRepository,
-            LocationShareSessionRepository shareSessionRepository) {
+            LocationShareSessionRepository shareSessionRepository,
+            UserProfileRepository profileRepository) {
         this.userLiveLocationRepository = userLiveLocationRepository;
         this.shareSessionRepository = shareSessionRepository;
+        this.profileRepository = profileRepository;
     }
 
     public UserLiveLocation publishLocation(Long userId, Double latitude, Double longitude) {
@@ -58,6 +62,9 @@ public class LocationSharingApplicationService {
     }
 
     public LocationShareSession startSharing(Long ownerUserId, Long targetUserId) {
+        if (profileRepository.findById(targetUserId).isEmpty()) {
+            throw new IllegalArgumentException("Target user not found: " + targetUserId);
+        }
         Optional<LocationShareSession> existing =
                 shareSessionRepository.findByOwnerAndTarget(ownerUserId, targetUserId);
         if (existing.isPresent()) {
