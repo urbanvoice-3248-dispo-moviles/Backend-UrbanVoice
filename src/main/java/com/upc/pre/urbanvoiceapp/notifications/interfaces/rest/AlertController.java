@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.upc.pre.urbanvoiceapp.notifications.interfaces.rest.resources.CreateBroadcastResource;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,19 @@ public class AlertController {
 
     public AlertController(AlertApplicationService alertService) {
         this.alertService = alertService;
+    }
+
+    @PostMapping("/broadcast")
+    @Operation(summary = "Enviar alerta masiva a todos los usuarios")
+    public ResponseEntity<AlertResponse> broadcastAlert(@RequestBody CreateBroadcastResource resource) {
+        var alert = alertService.createBroadcast(
+                resource.getTitle(),
+                resource.getMessage(),
+                resource.getLatitude(),
+                resource.getLongitude()
+        );
+        URI location = URI.create("/api/v1/alerts/" + alert.getId());
+        return ResponseEntity.created(location).body(toResponse(alert));
     }
 
     @PostMapping

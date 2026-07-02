@@ -11,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Authentication", description = "API de autenticación con JWT")
@@ -19,6 +23,7 @@ public class AuthController {
     private final UserProfileRepository userProfileRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final Map<String, String> passwordResetTokens = new ConcurrentHashMap<>();
 
     public AuthController(UserProfileRepository userProfileRepository,
                           BCryptPasswordEncoder passwordEncoder,
@@ -47,5 +52,38 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Solicitar restablecimiento de contraseña")
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        var userProfile = userProfileRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email not found"));
+
+        String resetToken = UUID.randomUUID().toString();
+        passwordResetTokens.put(resetToken, email);
+
+        return ResponseEntity.ok(Map.of("message", "Password reset token generated", "token", resetToken));
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Restablecer contraseña con token")
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        String newPassword = request.get("new_password");
+
+        String email = passwordResetTokens.remove(token);
+        if (email == null) {
+            throw new IllegalArgumentException("Invalid or expired reset token");
+        }
+
+        var userProfile = userProfileRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email not found"));
+
+        userProfile.setPassword(passwordEncoder.encode(newPassword));
+        userProfileRepository.save(userProfile);
+
+        return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
     }
 }

@@ -39,4 +39,10 @@ public interface IncidentReportRepository {
      * Obtiene todos los reportes.
      */
     List<IncidentReport> findAll();
+
+    long count();
+
+    java.util.Map<String, Long> countByIncidentType();
+
+    java.util.Map<String, Long> countByStatus();
 }

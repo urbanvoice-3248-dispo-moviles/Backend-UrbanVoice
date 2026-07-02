@@ -53,6 +53,9 @@ public class IncidentReportJpaEntity {
     @Column(name = "is_anonymous", nullable = false)
     private Boolean isAnonymous = false;
 
+    @Column(name = "status", nullable = false)
+    private String status = "PENDING";
+
     @CreatedDate
     @Column(name = "reported_at", nullable = false, updatable = false)
     private LocalDateTime reportedAt;

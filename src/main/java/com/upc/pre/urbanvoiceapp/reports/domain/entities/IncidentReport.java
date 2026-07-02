@@ -24,6 +24,7 @@ public class IncidentReport {
     private String description;
     private String mediaUrl;
     private boolean isAnonymous;
+    private String status;
     private LocalDateTime reportedAt;
     private final List<DomainEvent> domainEvents = new ArrayList<>();
 
@@ -37,6 +38,7 @@ public class IncidentReport {
         this.description = description;
         this.mediaUrl = mediaUrl;
         this.isAnonymous = isAnonymous;
+        this.status = "PENDING";
         this.reportedAt = LocalDateTime.now();
     }
 
@@ -57,6 +59,10 @@ public class IncidentReport {
 
     public void setMediaUrl(String mediaUrl) {
         this.mediaUrl = mediaUrl;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setReportedAt(LocalDateTime reportedAt) {

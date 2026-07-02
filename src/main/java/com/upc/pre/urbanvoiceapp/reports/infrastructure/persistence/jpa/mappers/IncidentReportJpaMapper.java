@@ -40,6 +40,7 @@ public class IncidentReportJpaMapper {
         );
 
         report.setReportedAt(jpaEntity.getReportedAt());
+        report.setStatus(jpaEntity.getStatus());
 
         return report;
     }
@@ -60,6 +61,7 @@ public class IncidentReportJpaMapper {
         jpaEntity.setAddress(domain.getLocation().getAddress());
         jpaEntity.setMediaUrl(domain.getMediaUrl());
         jpaEntity.setIsAnonymous(domain.isAnonymous());
+        jpaEntity.setStatus(domain.getStatus());
         jpaEntity.setReportedAt(domain.getReportedAt());
 
         return jpaEntity;

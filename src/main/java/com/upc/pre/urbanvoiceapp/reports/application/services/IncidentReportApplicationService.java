@@ -141,4 +141,27 @@ public class IncidentReportApplicationService {
     public List<IncidentReport> getAllReports() {
         return reportRepository.findAll();
     }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> getStatistics() {
+        java.util.Map<String, Object> stats = new java.util.HashMap<>();
+        stats.put("total_reports", reportRepository.count());
+        stats.put("reports_by_type", reportRepository.countByIncidentType());
+        stats.put("reports_by_status", reportRepository.countByStatus());
+        return stats;
+    }
+
+    public IncidentReport approveReport(Long reportId) {
+        IncidentReport report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new IncidentReportNotFoundException(reportId));
+        report.setStatus("APPROVED");
+        return reportRepository.save(report);
+    }
+
+    public IncidentReport rejectReport(Long reportId) {
+        IncidentReport report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new IncidentReportNotFoundException(reportId));
+        report.setStatus("REJECTED");
+        return reportRepository.save(report);
+    }
 }

@@ -26,6 +26,14 @@ public interface IncidentReportSpringDataRepository extends JpaRepository<Incide
             "ORDER BY reported_at DESC",
             nativeQuery = true)
     List<IncidentReportJpaEntity> findNearby(@Param("latitude") Double latitude,
-                                               @Param("longitude") Double longitude,
-                                               @Param("radiusInKm") Double radiusInKm);
+                                                @Param("longitude") Double longitude,
+                                                @Param("radiusInKm") Double radiusInKm);
+
+    @Query(value = "SELECT incident_type, COUNT(*) as cnt FROM incident_reports GROUP BY incident_type", nativeQuery = true)
+    List<Object[]> countByIncidentType();
+
+    @Query(value = "SELECT status, COUNT(*) as cnt FROM incident_reports GROUP BY status", nativeQuery = true)
+    List<Object[]> countByStatus();
+
+    long count();
 }

@@ -50,6 +50,7 @@ public class IncidentReportAssembler {
         response.setMediaUrl(report.getMediaUrl());
         response.setIsAnonymous(report.isAnonymous());
         response.setReportedAt(report.getReportedAt());
+        response.setStatus(report.getStatus());
         return response;
     }
 }

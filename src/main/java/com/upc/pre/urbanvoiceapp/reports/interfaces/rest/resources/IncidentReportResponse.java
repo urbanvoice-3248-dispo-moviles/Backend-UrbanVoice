@@ -48,4 +48,7 @@ public class IncidentReportResponse {
 
     @JsonProperty("reported_at")
     private LocalDateTime reportedAt;
+
+    @JsonProperty("status")
+    private String status;
 }

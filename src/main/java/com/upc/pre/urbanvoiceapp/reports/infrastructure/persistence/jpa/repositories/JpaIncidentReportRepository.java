@@ -61,4 +61,27 @@ public class JpaIncidentReportRepository implements IncidentReportRepository {
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public long count() {
+        return springDataRepository.count();
+    }
+
+    @Override
+    public java.util.Map<String, Long> countByIncidentType() {
+        return springDataRepository.countByIncidentType().stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> ((Number) row[1]).longValue()
+                ));
+    }
+
+    @Override
+    public java.util.Map<String, Long> countByStatus() {
+        return springDataRepository.countByStatus().stream()
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> ((Number) row[1]).longValue()
+                ));
+    }
 }

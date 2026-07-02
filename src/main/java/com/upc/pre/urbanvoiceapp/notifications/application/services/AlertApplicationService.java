@@ -49,4 +49,11 @@ public class AlertApplicationService {
     public void deleteAll() {
         alertRepository.deleteAll();
     }
+
+    public Alert createBroadcast(String title, String message, Double latitude, Double longitude) {
+        AlertType alertType = AlertType.INFORMATION;
+        Alert alert = new Alert(0L, alertType, title, message, latitude, longitude);
+        alert.validate();
+        return alertRepository.save(alert);
+    }
 }

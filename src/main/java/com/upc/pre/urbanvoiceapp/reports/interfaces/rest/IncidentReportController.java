@@ -78,6 +78,12 @@ public class IncidentReportController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/statistics")
+    @Operation(summary = "Obtener estadísticas de reportes")
+    public ResponseEntity<java.util.Map<String, Object>> getStatistics() {
+        return ResponseEntity.ok(reportService.getStatistics());
+    }
+
     @GetMapping("/nearby")
     @Operation(summary = "Obtener reportes cercanos a una ubicación")
     public ResponseEntity<List<IncidentReportResponse>> getNearbyIncidents(
@@ -108,6 +114,20 @@ public class IncidentReportController {
         DeleteIncidentReportCommand command = new DeleteIncidentReportCommand(id);
         reportService.handle(command);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/approve")
+    @Operation(summary = "Aprobar reporte de incidente")
+    public ResponseEntity<IncidentReportResponse> approveIncidentReport(@PathVariable Long id) {
+        var report = reportService.approveReport(id);
+        return ResponseEntity.ok(reportAssembler.toResponse(report));
+    }
+
+    @PutMapping("/{id}/reject")
+    @Operation(summary = "Rechazar reporte de incidente")
+    public ResponseEntity<IncidentReportResponse> rejectIncidentReport(@PathVariable Long id) {
+        var report = reportService.rejectReport(id);
+        return ResponseEntity.ok(reportAssembler.toResponse(report));
     }
 
 }
